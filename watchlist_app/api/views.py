@@ -51,7 +51,10 @@ class StreamPlatformDetail(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        platform = StreamPlatform.objects.get(pk=pk)
+        try:
+            platform = StreamPlatform.objects.get(pk=pk)
+        except StreamPlatform.DoesNotExist:
+            return Response({'Error': 'Item Not Found'}, status=status.HTTP_404_NOT_FOUND)
         platform.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -92,7 +95,10 @@ class WatchlistDetailView(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk):
-        movie = Watchlist.objects.get(pk=pk)
+        try:
+            movie = Watchlist.objects.get(pk=pk)
+        except Watchlist.DoesNotExist:
+            return Response({'Error': 'Movie not found'}, status=status.HTTP_404_NOT_FOUND)
         movie.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
