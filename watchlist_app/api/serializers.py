@@ -3,15 +3,6 @@ from rest_framework import serializers
 from watchlist_app.models import *
 
 
-class StreamPlatformSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StreamPlatform
-        fields = '__all__'
-
-    def __str__(self):
-        return name
-
-
 class WatchlistSerializer(serializers.ModelSerializer):
     len_name = serializers.SerializerMethodField()
 
@@ -33,6 +24,21 @@ class WatchlistSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('name is too short')
         else:
             return value
+
+
+class StreamPlatformSerializer(serializers.ModelSerializer):
+    watchlist = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='movie-details'
+    )
+
+    class Meta:
+        model = StreamPlatform
+        fields = '__all__'
+
+    def __str__(self):
+        return name
 
 # def name_length(value):
 #     if len(value) < 2:
