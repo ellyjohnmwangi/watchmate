@@ -32,5 +32,5 @@ class Review(models.Model):
     active = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.rating
+        return str(self.rating) + ' stars: ' + self.watchlist.title
 
