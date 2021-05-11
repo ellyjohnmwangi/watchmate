@@ -1,4 +1,4 @@
-from rest_framework import status
+from rest_framework import status, mixins, generics
 # from rest_framework.decorators import api_view
 from rest_framework.views import APIView
 from watchlist_app.models import StreamPlatform, Watchlist
@@ -6,48 +6,48 @@ from watchlist_app.api.serializers import *
 from rest_framework.response import Response
 
 
-class ReviewView(APIView):
-    def get(self, request):
-        reviews = Review.objects.all()
-        serializer = ReviewSerializer(reviews, many=True, context={'request': request} )
-        return Response(serializer.data)
+class ReviewList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
 
-    def post(self, request):
-        serializer = ReviewSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
 
-    def put(self, request, pk):
-        reviews = Review.objects.get(pk=pk)
-        serializer = ReviewSerializer(reviews, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+    # class ReviewView(APIView):
 
 
-class ReviewDetailView(APIView):
-    def get(self, request, pk):
-        try:
-            reviews = Review.objects.get(pk=pk)
-        except Review.DoesNotExist:
-            return Response({'Error': 'Platform not found!'}, status=status.HTTP_404_NOT_FOUND)
+#     def get(self, request):
+#         reviews = Review.objects.all()
+#         serializer = ReviewSerializer(reviews, many=True, context={'request': request} )
+#         return Response(serializer.data)
 
-        serializer = ReviewSerializer(reviews, context={'request': request})
-        return Response(serializer.data)
+# def post(self, request):
+#     serializer = ReviewSerializer(data=request.data)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data)
+#     else:
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+# def put(self, request, pk):
+#     reviews = Review.objects.get(pk=pk)
+#     serializer = ReviewSerializer(reviews, data=request.data)
+#     if serializer.is_valid():
+#         serializer.save()
+#         return Response(serializer.data)
+#     else:
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def put(self, request, pk):
-        reviews = Review.objects.get(pk=pk)
-        serializer = ReviewSerializer(reviews, data=request.data, )
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class ReviewDetailView(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = Review.objects.all()
+    serializer_class = ReviewSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
 
 
 class StreamPlatformView(APIView):
