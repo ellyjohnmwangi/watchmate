@@ -1,8 +1,9 @@
 from rest_framework import status, mixins, generics, viewsets
 # from rest_framework.decorators import api_view
 from rest_framework.exceptions import ValidationError
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.views import APIView
+from rest_framework.throttling import UserRateThrottle, AnonRateThrottle
 from watchlist_app.models import StreamPlatform, Watchlist
 from watchlist_app.api.serializers import *
 from watchlist_app.api.permission import AdminOrReadOnly, ReviewUserOrReadOnly
@@ -11,6 +12,7 @@ from rest_framework.response import Response
 
 class ReviewCreate(generics.CreateAPIView):
     serializer_class = ReviewSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Review.objects.all()
@@ -38,7 +40,8 @@ class ReviewCreate(generics.CreateAPIView):
 class ReviewList(generics.ListAPIView):
     # queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
+    throttle_classes = [UserRateThrottle, AnonRateThrottle]
 
     def get_queryset(self):
         pk = self.kwargs['pk']
@@ -52,6 +55,7 @@ class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class StreamPlatformView(generics.ListCreateAPIView):
+    permission_classes = [AdminOrReadOnly]
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer
 
@@ -66,15 +70,18 @@ class StreamPlatformView(generics.ListCreateAPIView):
 
 
 class StreamPlatformDetail(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AdminOrReadOnly]
     queryset = StreamPlatform.objects.all()
     serializer_class = StreamPlatformSerializer
 
 
 class WatchlistView(generics.ListCreateAPIView):
+    permission_classes = [AdminOrReadOnly]
     queryset = Watchlist.objects.all()
     serializer_class = WatchlistSerializer
 
 
 class WatchlistDetailView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [AdminOrReadOnly]
     queryset = Watchlist.objects.all()
     serializer_class = WatchlistSerializer
