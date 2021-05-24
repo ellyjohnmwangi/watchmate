@@ -141,5 +141,7 @@ REST_FRAMEWORK = {
         'review-list': '300/day',
         'review_detail': '4/day',
     }
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'PAGE_SIZE': 5,
 }
 

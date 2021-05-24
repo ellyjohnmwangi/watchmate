@@ -5,6 +5,8 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.views import APIView
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.throttling import UserRateThrottle, AnonRateThrottle, ScopedRateThrottle
+
+from watchlist_app.api.pagination import WatchListSetPagination, WatchListLimitPagination
 from watchlist_app.models import StreamPlatform, Watchlist
 from watchlist_app.api.serializers import *
 from watchlist_app.api.permission import AdminOrReadOnly, ReviewUserOrReadOnly
@@ -101,6 +103,7 @@ class WatchlistView(generics.ListCreateAPIView):
     permission_classes = [AdminOrReadOnly]
     queryset = Watchlist.objects.all()
     serializer_class = WatchlistSerializer
+    pagination_class = WatchListSetPagination
 
 
 class WatchlistDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -114,5 +117,6 @@ class MovieList(generics.ListAPIView):
     serializer_class = WatchlistSerializer
     # permission_classes = [IsAuthenticated]
     # throttle_classes = [ReviewListThrottle, AnonRateThrottle]
-    filter_backends = [filters.SearchFilter]
-    search_fields = ['title', 'platform__name']
+    filter_backends = [filters.OrderingFilter]
+    ordering_fields = ['avg_rating']
+    pagination_class = WatchListLimitPagination
