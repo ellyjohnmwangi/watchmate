@@ -1,11 +1,9 @@
-from django.urls import reverse
 from django.contrib.auth.models import User
-
+from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 from rest_framework.authtoken.models import Token
+from rest_framework.test import APITestCase
 
-from watchlist_app.api import serializers
 from watchlist_app import models
 
 
@@ -120,7 +118,6 @@ class ReviewTestCase(APITestCase):
         response = self.client.post(reverse('review-create', args=(self.watchlist.id,)), data)
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertEqual(models.Review.objects.count(), 2)
-        # self.assertEqual(models.Review.objects.get().rating, 4)
 
         response = self.client.post(reverse('review-create', args=(self.watchlist.id,)), data)
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
